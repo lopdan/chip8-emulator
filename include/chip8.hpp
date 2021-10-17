@@ -1,4 +1,7 @@
+#pragma once
+
 #include <cstdint>
+#include <random>
 
 class Chip8{
 	public:
@@ -17,4 +20,24 @@ class Chip8{
 		uint8_t input_keys[16];
 		uint32_t video[64*32];
 		uint16_t opcode;
+
+	private:
+		/** http://devernay.free.fr/hacks/chip8/C8TECH10.HTM */
+		void CLS(); 	void RET(); 	void OEXE();
+		void JUMP(); 	void EXE(); 	void SEI();
+		void SNEI(); 	void SE(); 		void STRI();
+		void ADDI(); 	void COPY(); 	void OR();
+		void AND(); 	void XOR(); 	void ADD();
+		void SUB(); 	void RSH(); 	void SUBR();
+		void LSH(); 	void SNE(); 	void STR();
+		void BR(); 		void RND(); 	void DRAW();
+		void SP(); 		void SNP(); 	void STRD();
+		void WAIT(); 	void SETD(); 	void SETS();
+		void OFFS(); 	void NUM(); 	void BCD();
+		void STRM(); 	void LDM(); 
+		
+		void XXX(); // Illegal opcode
+
+		std::default_random_engine randGen;
+		std::uniform_int_distribution<uint8_t> randByte;
 };
