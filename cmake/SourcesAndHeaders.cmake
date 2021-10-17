@@ -2,11 +2,10 @@ set(sources
 )
 
 set(exe_sources
-		core/src/main.c
-		${sources}
+	app/main.cpp
+	${sources}
 )
 
 set(headers
-    core/include/bus.h
-    core/include/cpu.h
+    include/chip8.hpp
 )

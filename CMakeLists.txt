@@ -2,10 +2,10 @@
 cmake_minimum_required(VERSION 3.1)
 
 # Project name
-project(compiler)
+project(chip8-emulator)
 
-# Build for gcc-8.1 if we can
-set(CMAKE_C_COMPILE "gcc-8.1")
+# Build for C++20 if we can
+set(CMAKE_CXX_STANDARD 20)
 
 # Turn on any compiler-specific flags
 if (WIN32)
