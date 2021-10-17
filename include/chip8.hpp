@@ -1,7 +1,11 @@
 #include <cstdint>
 
-class chip8{
+class Chip8{
 	public:
+		Chip8();
+		void LoadROM(char const* filename);
+
+		/** Components from the Chip-8 */
 		uint8_t registers[16];
 		uint8_t memory[4096];
 		uint16_t index_register;
