@@ -8,11 +8,22 @@ const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
 const unsigned int FONTSET_START_ADDRESS = 0x50;
 
+
+
+
 Chip8::Chip8():randGen(std::chrono::system_clock::now().time_since_epoch().count())
 {
 	// Initialize PC
 	program_counter = START_ADDRESS;
 	randByte = std::uniform_int_distribution<uint8_t>(0, 255U);
+
+	// Extract the bitfields from the opcode
+	unsigned int u 		= (opcode >> 12) & 0xF;
+	unsigned int p 		= (opcode >> 0)  & 0xF;
+	unsigned int y 		= (opcode >> 4)  & 0xF;
+	unsigned int x 		= (opcode >> 8)  & 0xF;
+	unsigned int kk 	= (opcode >> 0)  & 0xFF;
+	unsigned int nnn 	= (opcode >> 0)  & 0xFFF;
 
 	// Load fonts into memory
 	for (unsigned int i = 0; i < FONTSET_SIZE; i++)
@@ -102,7 +113,7 @@ void Chip8::EXE()
 }
 
 /** Call subroutine at nnn (3xkk) */
-void Chip8::SE()
+void Chip8::SEI()
 {
 	uint8_t byte = (opcode>>0) & 0x00FFu;
 	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
@@ -114,7 +125,7 @@ void Chip8::SE()
 }
 
 /** Skip next instruction if Vx != kk (4xkk) */
-void Chip8::SNE()
+void Chip8::SNEI()
 {
 	uint8_t byte = (opcode>>0) & 0x00FFu;
 	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
@@ -123,4 +134,71 @@ void Chip8::SNE()
 	{
 		program_counter += 2;
 	}
+}
+
+/** Skip next instruction if Vx = Vy (5xy0) */
+void Chip8::SE()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	if (registers[Vx] == registers[Vy])
+	{
+		program_counter += 2;
+	}
+}
+
+
+/** Set Vx = kk (6xkk) */
+void Chip8::STRI()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t byte = opcode & 0x00FFu;
+
+	registers[Vx] = byte;
+}
+
+/** Set Vx = Vx + kk (7xkk) */
+void Chip8::ADDI()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t byte = opcode & 0x00FFu;
+
+	registers[Vx] += byte;
+}
+
+/** Set Vx = Vy (8xy0) 	*/
+void Chip8::COPY()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	registers[Vx] = registers[Vy];
+}
+
+/** Set Vx = Vx OR Vy (8xy1) */
+void Chip8::OR()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	registers[Vx] |= registers[Vy];
+}
+
+/** Set Vx = Vx AND Vy (8xy2) */
+void Chip8::AND()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	registers[Vx] &= registers[Vy];
+}
+
+/** Set Vx = Vx XOR Vy (8xy3) */
+void Chip8::XOR()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	registers[Vx] ^= registers[Vy];
 }
