@@ -86,7 +86,41 @@ void Chip8::RET()
 /** Jump to location nnn (1NNN) */
 void Chip8::JUMP()
 {
-	uint16_t address = opcode & 0x0FFFu;
+	uint16_t address = (opcode>>0) & 0x0FFFu;
 
 	program_counter = address;
+}
+
+/** Call subroutine at nnn (2nnn) */
+void Chip8::EXE()
+{
+	uint16_t address = (opcode>>0) & 0x0FFFu;
+
+	++stack_pointer;
+	program_counter = stack[stack_pointer];
+	program_counter = address;
+}
+
+/** Call subroutine at nnn (3xkk) */
+void Chip8::SE()
+{
+	uint8_t byte = (opcode>>0) & 0x00FFu;
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+	if(registers[Vx] == byte)
+	{
+		program_counter += 2;
+	}
+}
+
+/** Skip next instruction if Vx != kk (4xkk) */
+void Chip8::SNE()
+{
+	uint8_t byte = (opcode>>0) & 0x00FFu;
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+	if (registers[Vx] != byte)
+	{
+		program_counter += 2;
+	}
 }
