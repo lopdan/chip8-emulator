@@ -202,3 +202,118 @@ void Chip8::XOR()
 
 	registers[Vx] ^= registers[Vy];
 }
+
+/** Set Vx = Vx + Vy, set VF = carry (8xy4)*/
+void Chip8::ADD()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	uint16_t sum = registers[Vx] + registers[Vy];
+
+	if (sum > 255U)
+	{
+		registers[0xF] = 1;
+	}
+	else
+	{
+		registers[0xF] = 0;
+	}
+
+	registers[Vx] = sum & 0xFFu;
+}
+
+/** Set Vx = Vx - Vy, set VF = NOT borrow (8xy5)*/
+void Chip8::SUB()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	if (registers[Vx] > registers[Vy])
+	{
+		registers[0xF] = 1;
+	}
+	else
+	{
+		registers[0xF] = 0;
+	}
+
+	registers[Vx] -= registers[Vy];
+}
+
+/** Set Vx = Vx SHR 1 (8xy6)*/
+void Chip8::RSH()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+	// Save LSB in VF
+	registers[0xF] = (registers[Vx] & 0x1u);
+
+	registers[Vx] >>= 1;
+}
+
+/** Set Vx = Vy - Vx, set VF = NOT borrow (8xy7)*/
+void Chip8::SUBR()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	if (registers[Vy] > registers[Vx])
+	{
+		registers[0xF] = 1;
+	}
+	else
+	{
+		registers[0xF] = 0;
+	}
+
+	registers[Vx] = registers[Vy] - registers[Vx];
+}
+
+/** Set Vx = Vx SHL 1 (8xyE)*/
+void Chip8::LSH()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+	// Save MSB in VF
+	registers[0xF] = (registers[Vx] & 0x80u) >> 7u;
+
+	registers[Vx] <<= 1;
+}
+
+/** Skip next instruction if Vx != Vy (9xy0)*/
+void Chip8::SNE()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+	if (registers[Vx] != registers[Vy])
+	{
+		program_counter += 2;
+	}
+}
+
+/** Set I = nnn (Annn)*/
+void Chip8::STR()
+{
+	uint16_t address = opcode & 0x0FFFu;
+
+	index_register = address;
+}
+
+/** Jump to location nnn + V0 (Bnnn)*/
+void Chip8::BR()
+{
+	uint16_t address = opcode & 0x0FFFu;
+
+	program_counter = registers[0] + address;
+}
+
+/** Set Vx = random byte AND kk (Cxkk)*/
+void Chip8::RND()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t byte = opcode & 0x00FFu;
+
+	registers[Vx] = randByte(randGen) & byte;
+}
