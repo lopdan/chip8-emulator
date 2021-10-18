@@ -361,3 +361,52 @@ void Chip8::DRAW()
 		}
 	}
 }
+
+/** Skip next instruction if the key corresponding to the value of the lower 
+ *  4 bits in register VX is pressed (Ex9E)
+ */
+void Chip8::SP()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	if(input_keys[registers[Vx]])
+	{
+		program_counter += 2;
+	}
+}
+
+/** Skip next instruction if the key corresponding to the value of the lower 
+ *  4 bits in register VX is not pressed (ExA1)*/
+void Chip8::SNP()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	if(!input_keys[registers[Vx]])
+	{
+		program_counter += 2;
+	}
+}
+
+/** Copy the value in register DT into register VX (fx07)*/
+void Chip8::STRD()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	registers[Vx] = delay_timer;
+}
+
+/** Wait for a keypress and store the key value into register VX (Fx0A)*/
+void Chip8::WAIT()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	bool key_pressed = false;
+	for (int i = 0; i < 16; i++)
+	{
+		if (input_keys[i] != 0)
+		{
+			key_pressed = true;
+			registers[Vx] = (uint8_t) i;
+		}
+	}
+	if (key_pressed)
+	{
+		program_counter += 2;
+	}
+}
