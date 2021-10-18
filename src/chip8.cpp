@@ -296,7 +296,7 @@ void Chip8::SNE()
 /** Set I = nnn (Annn)*/
 void Chip8::STR()
 {
-	uint16_t address = opcode & 0x0FFFu;
+	uint16_t address = (opcode>>0) & 0x0FFFu;
 
 	index_register = address;
 }
@@ -304,7 +304,7 @@ void Chip8::STR()
 /** Jump to location nnn + V0 (Bnnn)*/
 void Chip8::BR()
 {
-	uint16_t address = opcode & 0x0FFFu;
+	uint16_t address = (opcode>>0) & 0x0FFFu;
 
 	program_counter = registers[0] + address;
 }
@@ -316,4 +316,48 @@ void Chip8::RND()
 	uint8_t byte = opcode & 0x00FFu;
 
 	registers[Vx] = randByte(randGen) & byte;
+}
+
+/** Display n-byte sprite starting at memory location I at (Vx, Vy), 
+ *  set VF = collision (Dxyn) 
+ * 
+ *  The interpreter reads n bytes from memory, starting at the address stored in I. 
+ *  These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). 
+ *  Sprites are XORed onto the existing screen. 
+ *  If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. 
+ *  If the sprite is positioned so part of it is outside the coordinates of the display, 
+ *  it wraps around to the opposite side of the screen. 
+ * 
+*/
+void Chip8::DRAW()
+{
+	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+	uint16_t address = index_register;
+
+	uint8_t x = registers[Vx] % VIDEO_WIDTH;
+	uint8_t y = registers[Vy] % VIDEO_HEIGHT;
+	int height = opcode & 0x000F; //N
+	int width = 8;
+	registers[0x0F] = 0;
+
+	for (unsigned int row = 0; row < height; ++row)
+	{
+		uint8_t spriteByte = memory[index_register + row];
+		for (unsigned int col = 0; col < 8; ++col)
+		{
+			uint32_t* screenPixel = &video[(y + row) * VIDEO_WIDTH + (x + col)];
+			// ON
+			if (spriteByte & (0x80u >> col))
+			{
+				// ON & collision
+				if (*screenPixel == 0xFFFFFFFF)
+				{
+					registers[0xF] = 1;
+				}
+				// XOR the sprite pixel
+				*screenPixel ^= 0xFFFFFFFF;
+			}
+		}
+	}
 }
