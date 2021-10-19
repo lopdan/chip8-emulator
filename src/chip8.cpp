@@ -3,6 +3,7 @@
 #include <fstream>
 #include <chrono>
 #include <random>
+#include <SDL/SDL.h>
 
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
@@ -16,6 +17,18 @@ Chip8::Chip8():randGen(std::chrono::system_clock::now().time_since_epoch().count
 	// Initialize PC
 	program_counter = START_ADDRESS;
 	randByte = std::uniform_int_distribution<uint8_t>(0, 255U);
+
+	if (SDL_Init(SDL_INIT_VIDEO) == -1)
+	{
+		std::cerr << "Error cannot initialize SDL" << std::endl;
+	}
+
+	// Initialise memory to 0
+	memset(&memory, 0, 4096);
+	memset(&registers, 0, 16);
+	memset(&stack, 0, 16);
+	memset(&video, 0, 64 * 32);
+	memset(&input_keys, 0, 16);
 
 	// Extract the bitfields from the opcode
 	unsigned int u 		= (opcode >> 12) & 0xF;
@@ -142,6 +155,27 @@ void Chip8::Cycle()
 	}
 }
 
+void Chip8::Table0()
+{
+	((*this).*(table0[opcode & 0x000Fu]))();
+}
+
+void Chip8::Table8()
+{
+	((*this).*(table8[opcode & 0x000Fu]))();
+}
+
+void Chip8::TableE()
+{
+	((*this).*(tableE[opcode & 0x000Fu]))();
+}
+
+void Chip8::TableF()
+{
+	((*this).*(tableF[opcode & 0x00FFu]))();
+}
+
+void Chip8::XXX(){}
 
 /** Clear the display (00E0) */
 void Chip8::CLS()
