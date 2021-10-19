@@ -124,6 +124,25 @@ void Chip8::LoadROM(char const* filename)
 	}
 }
 
+/** Fetch the next instruction and decode it. Then execute the instruction */
+void Chip8::Cycle()
+{
+	opcode = (memory[program_counter] << 8u) | memory[program_counter + 1];
+	program_counter += 2;
+	((*this).*(table[(opcode & 0xF000u) >> 12u]))();
+
+	if (delay_timer > 0)
+	{
+		--delay_timer;
+	}
+
+	if (sound_timer > 0)
+	{
+		--sound_timer;
+	}
+}
+
+
 /** Clear the display (00E0) */
 void Chip8::CLS()
 {

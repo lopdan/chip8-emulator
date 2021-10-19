@@ -10,7 +10,8 @@ const unsigned int VIDEO_WIDTH = 64;
 class Chip8{
 	public:
 		Chip8();
-		void LoadROM(char const* filename);
+		void LoadROM(char const* file);
+		void Cycle();
 
 		/** Components from the Chip-8 */
 		uint8_t registers[16];
