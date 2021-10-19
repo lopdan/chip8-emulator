@@ -435,3 +435,37 @@ void Chip8::NUM()
 {
 	index_register = registers[(opcode & 0x0F00) >> 8] * 0x5;
 }
+
+/** Generate the binary coded decimal of the value in register VX 
+ *  starting at the address pointed to by register I (Fx33)*/
+void Chip8::BCD()
+{
+	uint8_t value = registers[(opcode & 0x0F00u) >> 8u];
+
+	// Ones digit
+	memory[index_register + 2] = value % 10;
+	value /= 10;
+
+	// Tens digit
+	memory[index_register + 1] = value % 10;
+	value /= 10;
+
+	// Hundreds digit
+	memory[index_register] = value % 10;
+}
+
+/** Store the values from registers V0 to VX into memory starting at 
+ *  the address stored in I (Fx55)*/
+void Chip8::STRM()
+{
+	for(int i = 0; i <= ((opcode & 0x0F00) >> 8); ++i)
+		memory[index_register + i] = registers[i];
+}
+
+/** Load the values in memory starting at address I 
+ *  into registers V0 to VX (Fx65)*/
+void Chip8::LDM()
+{
+	for(int i = 0; i <= ((opcode & 0x0F00) >> 8); i++)
+		registers[i] = memory[index_register + i];
+}
