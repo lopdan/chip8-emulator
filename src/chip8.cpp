@@ -410,3 +410,28 @@ void Chip8::WAIT()
 		program_counter += 2;
 	}
 }
+
+/** Set the delay timer to the value in register VX (Fx15)*/
+void Chip8::SETD()
+{
+	delay_timer = registers[(opcode & 0x0F00) >> 8];
+}
+
+/** Set the sound timer to the value in register VX (Fx18)*/
+void Chip8::SETS()
+{
+	sound_timer = registers[(opcode & 0x0F00) >> 8];
+}
+
+/** Add the value in register VX to register I (Fx1E)*/
+void Chip8::OFFS()
+{
+	index_register += registers[(opcode & 0x0F00) >> 8];
+}
+
+/** Set the value in register I to the corresponding digit sprite of 
+ *  the value in register VX (Fx29)*/
+void Chip8::NUM()
+{
+	index_register = registers[(opcode & 0x0F00) >> 8] * 0x5;
+}
