@@ -30,6 +30,49 @@ Chip8::Chip8():randGen(std::chrono::system_clock::now().time_since_epoch().count
 	{
 		memory[FONTSET_START_ADDRESS + i] = chip8_fontset[i];
 	}
+
+	table[0x0] = &Chip8::Table0;
+	table[0x1] = &Chip8::JUMP;
+	table[0x2] = &Chip8::EXE;
+	table[0x3] = &Chip8::SEI;
+	table[0x4] = &Chip8::SNEI;
+	table[0x5] = &Chip8::SE;
+	table[0x6] = &Chip8::STRI;
+	table[0x7] = &Chip8::ADDI;
+	table[0x8] = &Chip8::Table8;
+	table[0x9] = &Chip8::SNE;
+	table[0xA] = &Chip8::STR;
+	table[0xB] = &Chip8::BR;
+	table[0xC] = &Chip8::RND;
+	table[0xD] = &Chip8::DRAW;
+	table[0xE] = &Chip8::TableE;
+	table[0xF] = &Chip8::TableF;
+
+	table0[0x0] = &Chip8::CLS;
+	table0[0xE] = &Chip8::RET;
+
+	table8[0x0] = &Chip8::COPY;
+	table8[0x1] = &Chip8::OR;
+	table8[0x2] = &Chip8::AND;
+	table8[0x3] = &Chip8::XOR;
+	table8[0x4] = &Chip8::ADD;
+	table8[0x5] = &Chip8::SUB;
+	table8[0x6] = &Chip8::RSH;
+	table8[0x7] = &Chip8::SUBR;
+	table8[0xE] = &Chip8::LSH;
+
+	tableE[0x1] = &Chip8::SNP;
+	tableE[0xE] = &Chip8::SP;
+
+	tableF[0x07] = &Chip8::STRD;
+	tableF[0x0A] = &Chip8::WAIT;
+	tableF[0x15] = &Chip8::SETD;
+	tableF[0x18] = &Chip8::SETS;
+	tableF[0x1E] = &Chip8::OFFS;
+	tableF[0x29] = &Chip8::NUM;
+	tableF[0x33] = &Chip8::BCD;
+	tableF[0x55] = &Chip8::STRM;
+	tableF[0x65] = &Chip8::LDM;
 }
 
 unsigned char chip8_fontset[FONTSET_SIZE] =
