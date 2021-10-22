@@ -1,5 +1,11 @@
 # CHIP-8 Emulator
 
+Tetris                     |  Pong
+:-------------------------:|:-------------------------:
+![](app/images/AnimationTetris.gif) | ![](app/images/AnimationPong.gif)
+
+CHIP-8 is an interpretted programming language developed by Joseph Weisbecker in the mid 70s and was initally used on the COSMAC VIP and Telmac 1800 8-bit microcomputers to make game programming easier. CHIP-8 programs are run using a CHIP-8 virtual machine.
+
 ## Instruction Set Table
 
 There are 35 instructions in the Chip8 programming language. The opcodes will contain additional information necessary to execute the instruction. This information is as follows: X represents register VX, Y represents register VY, N represents a 4-bit immediate value, NN represents an 8-bit immediate value, NNN represents a 12-bit immediate value.
@@ -41,3 +47,10 @@ There are 35 instructions in the Chip8 programming language. The opcodes will co
 | BCD   | FX33 | Generate the binary coded decimal of the value in register VX starting at the address pointed to by register I |
 | STRM  | FX55 | Store the values from registers V0 to VX into memory starting at the address stored in I |
 | LDM   | FX65 | Load the values in memory starting at address I into registers V0 to VX |
+
+## References
+
+Helpful resources:
+* https://github.com/airloaf/ChipM8-Core/wiki/
+* http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#00E0
+* https://www.youtube.com/watch?v=rpLoS7B6T94
